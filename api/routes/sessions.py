@@ -19,6 +19,7 @@ from api.services.session_intelligence.significance import (
 )
 from api.services.session_intelligence.intent import determine_intent_signal
 from api.services.session_intelligence.health import determine_session_health
+from api.services.session_intelligence.reliability import determine_reliability_signal
 
 
 router = APIRouter(
@@ -171,6 +172,13 @@ def query_sessions(
             1 if status == "active" else 0
         )
 
+        reliability_signal = determine_reliability_signal(
+            session_health,
+            session_pattern,
+            activity_level,
+            status
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -196,6 +204,7 @@ def query_sessions(
                 "session_summary": session_summary,
                 "intent_signal": intent_signal,
                 "session_health": session_health,
+                "reliability_signal": reliability_signal,
             }
         )
 

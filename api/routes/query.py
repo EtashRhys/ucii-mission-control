@@ -15,14 +15,22 @@ router = APIRouter(
 @router.get("")
 def query_events(
     limit: int = 50,
+    event_type: str | None = None,
     database: Session = Depends(get_database)
 ):
 
     if limit > 100:
         limit = 100
 
+    query = database.query(Event)
+
+    if event_type:
+        query = query.filter(
+            Event.event_type == event_type
+        )
+
     events = (
-        database.query(Event)
+        query
         .order_by(
             Event.created_at.desc()
         )

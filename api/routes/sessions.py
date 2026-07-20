@@ -15,8 +15,12 @@ router = APIRouter(
 
 @router.get("")
 def query_sessions(
+    limit: int = 50,
     database: Session = Depends(get_database)
 ):
+
+    if limit > 100:
+        limit = 100
 
     sessions = (
         database.query(
@@ -30,6 +34,10 @@ def query_sessions(
             Event.session_id,
             Event.visitor_id
         )
+        .order_by(
+            func.max(Event.created_at).desc()
+        )
+        .limit(limit)
         .all()
     )
 

@@ -18,13 +18,13 @@ from api.services.session_intelligence.significance import (
     determine_session_summary,
 )
 from api.services.session_intelligence.intent import determine_intent_signal
+from api.services.session_intelligence.health import determine_session_health
 
 
 router = APIRouter(
     prefix="/sessions",
     tags=["sessions"]
 )
-
 
 
 @router.get("")
@@ -164,6 +164,13 @@ def query_sessions(
             session_pattern
         )
 
+        session_health = determine_session_health(
+            session.event_count,
+            activity_level,
+            status,
+            1 if status == "active" else 0
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -188,6 +195,7 @@ def query_sessions(
                 "significance_reason": significance_reason,
                 "session_summary": session_summary,
                 "intent_signal": intent_signal,
+                "session_health": session_health,
             }
         )
 

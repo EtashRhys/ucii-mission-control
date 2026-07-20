@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -82,4 +83,45 @@ def query_sessions(
 
     return {
         "sessions": results
+    }
+
+
+@router.get("/{session_id}")
+def get_session(
+    session_id: str,
+    database: Session = Depends(get_database)
+):
+
+    events = (
+        database.query(Event)
+        .filter(
+            Event.session_id == session_id
+        )
+        .order_by(
+            Event.created_at.asc()
+        )
+        .all()
+    )
+
+    if not events:
+        raise HTTPException(
+            status_code=404,
+            detail="Session not found"
+        )
+
+    return {
+        "session_id": session_id,
+        "visitor_id": events[0].visitor_id,
+        "first_seen": events[0].created_at,
+        "last_seen": events[-1].created_at,
+        "event_count": len(events),
+        "events": [
+            {
+                "event_type": event.event_type,
+                "url": event.url,
+                "referrer": event.referrer,
+                "created_at": event.created_at,
+            }
+            for event in events
+        ]
     }

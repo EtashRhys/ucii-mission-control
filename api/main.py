@@ -4,6 +4,7 @@ from storage.database import Base
 from storage.database import engine
 
 from api.models import Event
+from api.routes import events
 
 
 Base.metadata.create_all(
@@ -18,8 +19,14 @@ app = FastAPI(
 )
 
 
+app.include_router(
+    events.router
+)
+
+
 @app.get("/")
 def root():
+
     return {
         "service": "UCII Mission Control",
         "status": "online",
@@ -29,6 +36,7 @@ def root():
 
 @app.get("/health")
 def health():
+
     return {
         "status": "healthy"
     }

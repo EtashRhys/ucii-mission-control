@@ -161,6 +161,13 @@ def query_sessions(
         else:
             significance_reason = "minimal_activity"
 
+        if significance_reason == "active_engagement":
+            session_summary = "active_visitor_engagement"
+        elif significance_reason == "multi_page_browsing":
+            session_summary = "visitor_browsing_activity"
+        else:
+            session_summary = "limited_interaction"
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -183,6 +190,7 @@ def query_sessions(
                 "session_pattern": session_pattern,
                 "session_significance": session_significance,
                 "significance_reason": significance_reason,
+                "session_summary": session_summary,
             }
         )
 

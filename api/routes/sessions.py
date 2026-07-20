@@ -115,6 +115,29 @@ def query_sessions(
             .scalar()
         )
 
+        last_event_type = (
+            latest_event.event_type
+            if latest_event
+            else None
+        )
+
+        if session.event_count >= 20:
+            activity_level = "high"
+        elif session.event_count >= 5:
+            activity_level = "medium"
+        else:
+            activity_level = "low"
+
+        if (
+            last_event_type == "heartbeat"
+            and pages_viewed < session.event_count
+        ):
+            session_pattern = "heartbeat_active"
+        elif pages_viewed > 1:
+            session_pattern = "browsing"
+        else:
+            session_pattern = "single_page"
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -132,11 +155,9 @@ def query_sessions(
                 "status": status,
                 "pages_viewed": pages_viewed,
                 "unique_paths": unique_paths,
-                "last_event_type": (
-                    latest_event.event_type
-                    if latest_event
-                    else None
-                ),
+                "last_event_type": last_event_type,
+                "activity_level": activity_level,
+                "session_pattern": session_pattern,
             }
         )
 

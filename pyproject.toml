@@ -1,3 +1,11 @@
+[build-system]
+requires = [
+    "setuptools>=68",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
+
+
 [project]
 name = "ucii-mission-control"
 version = "0.1.0"
@@ -12,8 +20,17 @@ dependencies = [
     "python-dotenv"
 ]
 
+
 [project.optional-dependencies]
 dev = [
     "pytest",
     "httpx"
+]
+
+
+[tool.setuptools.packages.find]
+include = [
+    "api*",
+    "storage*",
+    "shared*"
 ]

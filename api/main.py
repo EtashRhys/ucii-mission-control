@@ -1,5 +1,15 @@
 from fastapi import FastAPI
 
+from storage.database import Base
+from storage.database import engine
+
+from api.models import Event
+
+
+Base.metadata.create_all(
+    bind=engine
+)
+
 
 app = FastAPI(
     title="UCII Mission Control",

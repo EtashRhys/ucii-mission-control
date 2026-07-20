@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UCII Mission Control Tracker Test</title>
+</head>
+
+<body>
+
+<h1>
+UCII Mission Control Tracker Test
+</h1>
+
+<p>
+Opening this page should generate a page_view event.
+</p>
+
+<script src="../tracker/ucii-tracker.js"></script>
+
+<script>
+    UCIITracker.init({
+        endpoint: "http://158.69.206.9:8001/collect/event"
+    });
+</script>
+
+</body>
+</html>

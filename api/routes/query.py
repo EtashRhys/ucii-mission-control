@@ -16,6 +16,7 @@ router = APIRouter(
 def query_events(
     limit: int = 50,
     event_type: str | None = None,
+    visitor_id: str | None = None,
     database: Session = Depends(get_database)
 ):
 
@@ -27,6 +28,11 @@ def query_events(
     if event_type:
         query = query.filter(
             Event.event_type == event_type
+        )
+
+    if visitor_id:
+        query = query.filter(
+            Event.visitor_id == visitor_id
         )
 
     events = (

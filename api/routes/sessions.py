@@ -98,6 +98,23 @@ def query_sessions(
             else "inactive"
         )
 
+        pages_viewed = (
+            database.query(func.count(Event.id))
+            .filter(
+                Event.session_id == session.session_id,
+                Event.event_type == "page_view"
+            )
+            .scalar()
+        )
+
+        unique_paths = (
+            database.query(func.count(func.distinct(Event.url)))
+            .filter(
+                Event.session_id == session.session_id
+            )
+            .scalar()
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -113,6 +130,13 @@ def query_sessions(
                 "duration_seconds": duration_seconds,
                 "last_activity_seconds_ago": last_activity_seconds_ago,
                 "status": status,
+                "pages_viewed": pages_viewed,
+                "unique_paths": unique_paths,
+                "last_event_type": (
+                    latest_event.event_type
+                    if latest_event
+                    else None
+                ),
             }
         )
 

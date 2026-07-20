@@ -17,6 +17,44 @@ router = APIRouter(
 )
 
 
+def determine_intent_signal(
+    event_count: int,
+    current_url: str | None,
+    pages_viewed: int,
+    last_event_type: str | None,
+    activity_level: str,
+    session_pattern: str
+):
+
+    if (
+        event_count > 50
+        and last_event_type == "heartbeat"
+        and activity_level == "high"
+    ):
+        return "active_testing"
+
+    if (
+        current_url
+        and "/docs" in current_url
+        and pages_viewed > 1
+    ):
+        return "documentation_exploration"
+
+    if (
+        session_pattern == "heartbeat_active"
+        and event_count > 10
+    ):
+        return "feature_usage"
+
+    if (
+        activity_level == "low"
+        and pages_viewed <= 2
+    ):
+        return "idle_browsing"
+
+    return "unknown"
+
+
 @router.get("")
 def query_sessions(
     limit: int = 50,
@@ -168,6 +206,15 @@ def query_sessions(
         else:
             session_summary = "limited_interaction"
 
+        intent_signal = determine_intent_signal(
+            session.event_count,
+            latest_event.url if latest_event else None,
+            pages_viewed,
+            last_event_type,
+            activity_level,
+            session_pattern
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -191,6 +238,7 @@ def query_sessions(
                 "session_significance": session_significance,
                 "significance_reason": significance_reason,
                 "session_summary": session_summary,
+                "intent_signal": intent_signal,
             }
         )
 

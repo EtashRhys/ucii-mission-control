@@ -7,6 +7,7 @@ from storage.database import engine
 from api.models import Event
 from api.routes import events
 from api.routes import query
+from api.routes import sessions
 
 
 Base.metadata.create_all(
@@ -38,6 +39,11 @@ app.include_router(
 
 app.include_router(
     query.router
+)
+
+
+app.include_router(
+    sessions.router
 )
 
 

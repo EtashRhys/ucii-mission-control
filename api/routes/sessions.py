@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
@@ -109,19 +111,33 @@ def get_session(
             detail="Session not found"
         )
 
+    event_results = []
+
+    for event in events:
+
+        metadata = {}
+
+        if event.metadata_json:
+            try:
+                metadata = json.loads(event.metadata_json)
+            except json.JSONDecodeError:
+                metadata = {}
+
+        event_results.append(
+            {
+                "event_type": event.event_type,
+                "url": event.url,
+                "referrer": event.referrer,
+                "metadata": metadata,
+                "created_at": event.created_at,
+            }
+        )
+
     return {
         "session_id": session_id,
         "visitor_id": events[0].visitor_id,
         "first_seen": events[0].created_at,
         "last_seen": events[-1].created_at,
         "event_count": len(events),
-        "events": [
-            {
-                "event_type": event.event_type,
-                "url": event.url,
-                "referrer": event.referrer,
-                "created_at": event.created_at,
-            }
-            for event in events
-        ]
+        "events": event_results
     }

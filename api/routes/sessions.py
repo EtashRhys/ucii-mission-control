@@ -10,49 +10,21 @@ from sqlalchemy.orm import Session
 from api.models import Event
 from storage.database import get_database
 
+from api.services.session_intelligence.activity import determine_activity_level
+from api.services.session_intelligence.classification import determine_session_pattern
+from api.services.session_intelligence.significance import (
+    determine_session_significance,
+    determine_significance_reason,
+    determine_session_summary,
+)
+from api.services.session_intelligence.intent import determine_intent_signal
+
 
 router = APIRouter(
     prefix="/sessions",
     tags=["sessions"]
 )
 
-
-def determine_intent_signal(
-    event_count: int,
-    current_url: str | None,
-    pages_viewed: int,
-    last_event_type: str | None,
-    activity_level: str,
-    session_pattern: str
-):
-
-    if (
-        event_count > 50
-        and last_event_type == "heartbeat"
-        and activity_level == "high"
-    ):
-        return "active_testing"
-
-    if (
-        current_url
-        and "/docs" in current_url
-        and pages_viewed > 1
-    ):
-        return "documentation_exploration"
-
-    if (
-        session_pattern == "heartbeat_active"
-        and event_count > 10
-    ):
-        return "feature_usage"
-
-    if (
-        activity_level == "low"
-        and pages_viewed <= 2
-    ):
-        return "idle_browsing"
-
-    return "unknown"
 
 
 @router.get("")
@@ -159,52 +131,29 @@ def query_sessions(
             else None
         )
 
-        if session.event_count >= 20:
-            activity_level = "high"
-        elif session.event_count >= 5:
-            activity_level = "medium"
-        else:
-            activity_level = "low"
+        activity_level = determine_activity_level(
+            session.event_count
+        )
 
-        if (
-            last_event_type == "heartbeat"
-            and pages_viewed < session.event_count
-        ):
-            session_pattern = "heartbeat_active"
-        elif pages_viewed > 1:
-            session_pattern = "browsing"
-        else:
-            session_pattern = "single_page"
+        session_pattern = determine_session_pattern(
+            last_event_type,
+            pages_viewed,
+            session.event_count
+        )
 
-        if (
-            activity_level == "high"
-            and session_pattern == "heartbeat_active"
-        ):
-            session_significance = "important"
-        elif (
-            activity_level == "medium"
-            or session_pattern == "browsing"
-        ):
-            session_significance = "relevant"
-        else:
-            session_significance = "routine"
+        session_significance = determine_session_significance(
+            activity_level,
+            session_pattern
+        )
 
-        if (
-            session_significance == "important"
-            and session_pattern == "heartbeat_active"
-        ):
-            significance_reason = "active_engagement"
-        elif session_pattern == "browsing":
-            significance_reason = "multi_page_browsing"
-        else:
-            significance_reason = "minimal_activity"
+        significance_reason = determine_significance_reason(
+            session_significance,
+            session_pattern
+        )
 
-        if significance_reason == "active_engagement":
-            session_summary = "active_visitor_engagement"
-        elif significance_reason == "multi_page_browsing":
-            session_summary = "visitor_browsing_activity"
-        else:
-            session_summary = "limited_interaction"
+        session_summary = determine_session_summary(
+            significance_reason
+        )
 
         intent_signal = determine_intent_signal(
             session.event_count,

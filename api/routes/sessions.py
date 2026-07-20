@@ -16,14 +16,22 @@ router = APIRouter(
 @router.get("")
 def query_sessions(
     limit: int = 50,
+    visitor_id: str | None = None,
     database: Session = Depends(get_database)
 ):
 
     if limit > 100:
         limit = 100
 
+    query = database.query(Event)
+
+    if visitor_id:
+        query = query.filter(
+            Event.visitor_id == visitor_id
+        )
+
     sessions = (
-        database.query(
+        query.with_entities(
             Event.session_id,
             Event.visitor_id,
             func.min(Event.created_at).label("first_seen"),

@@ -6,6 +6,7 @@ from storage.database import engine
 
 from api.models import Event
 from api.routes import events
+from api.routes import query
 
 
 Base.metadata.create_all(
@@ -32,6 +33,11 @@ app.add_middleware(
 
 app.include_router(
     events.router
+)
+
+
+app.include_router(
+    query.router
 )
 
 

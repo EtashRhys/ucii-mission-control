@@ -1,0 +1,19 @@
+[project]
+name = "ucii-mission-control"
+version = "0.1.0"
+description = "Operational observability infrastructure for UCII"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "pydantic",
+    "python-dotenv"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "httpx"
+]

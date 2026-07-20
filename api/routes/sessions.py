@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -54,6 +55,10 @@ def query_sessions(
 
     results = []
 
+    now = datetime.now(timezone.utc)
+
+    ACTIVE_THRESHOLD_SECONDS = 300
+
     for session in sessions:
 
         latest_event = (
@@ -68,6 +73,31 @@ def query_sessions(
             .first()
         )
 
+        duration_seconds = int(
+            (
+                session.last_seen - session.first_seen
+            ).total_seconds()
+        )
+
+        last_seen = session.last_seen
+
+        if last_seen.tzinfo is None:
+            last_seen = last_seen.replace(
+                tzinfo=timezone.utc
+            )
+
+        last_activity_seconds_ago = int(
+            (
+                now - last_seen
+            ).total_seconds()
+        )
+
+        status = (
+            "active"
+            if last_activity_seconds_ago <= ACTIVE_THRESHOLD_SECONDS
+            else "inactive"
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -80,6 +110,9 @@ def query_sessions(
                     if latest_event
                     else None
                 ),
+                "duration_seconds": duration_seconds,
+                "last_activity_seconds_ago": last_activity_seconds_ago,
+                "status": status,
             }
         )
 

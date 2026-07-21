@@ -9,6 +9,10 @@ from api.services.visitor_intelligence.profile import (
     build_visitor_profile,
 )
 
+from api.services.visitor_intelligence.segmentation import (
+    determine_visitor_segment,
+)
+
 from api.services.session_intelligence.journey import (
     determine_journey_depth,
     determine_return_behavior,
@@ -130,6 +134,12 @@ def get_visitor_profile(
     profile = build_visitor_profile(
         session_profiles
     )
+
+    visitor_segment = determine_visitor_segment(
+        profile
+    )
+
+    profile["segment"] = visitor_segment
 
 
     return {

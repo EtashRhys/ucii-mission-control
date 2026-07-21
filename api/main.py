@@ -8,6 +8,7 @@ from api.models import Event
 from api.routes import events
 from api.routes import query
 from api.routes import sessions
+from api.routes import visitors
 
 
 Base.metadata.create_all(
@@ -44,6 +45,11 @@ app.include_router(
 
 app.include_router(
     sessions.router
+)
+
+
+app.include_router(
+    visitors.router
 )
 
 

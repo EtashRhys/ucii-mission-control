@@ -25,7 +25,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://158.69.206.9:8080",
+        "https://ucii.sportgen-ai.com",
     ],
     allow_methods=["*"],
     allow_headers=["*"],

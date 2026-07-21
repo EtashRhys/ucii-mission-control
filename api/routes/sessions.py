@@ -21,6 +21,12 @@ from api.services.session_intelligence.intent import determine_intent_signal
 from api.services.session_intelligence.health import determine_session_health
 from api.services.session_intelligence.reliability import determine_reliability_signal
 from api.services.session_intelligence.timeline import build_session_timeline
+from api.services.session_intelligence.journey import (
+    determine_journey_pattern,
+    determine_journey_depth,
+    determine_navigation_style,
+    determine_return_behavior,
+)
 
 
 router = APIRouter(
@@ -186,6 +192,30 @@ def query_sessions(
             status
         )
 
+        journey_pattern = determine_journey_pattern(
+            session_events,
+            pages_viewed,
+            activity_level
+        )
+
+        journey_depth = determine_journey_depth(
+            session.event_count,
+            pages_viewed,
+            duration_seconds
+        )
+
+        navigation_style = determine_navigation_style(
+            journey_pattern,
+            pages_viewed,
+            activity_level
+        )
+
+        return_behavior = determine_return_behavior(
+            session.event_count,
+            session.first_seen,
+            session.last_seen
+        )
+
         timeline = build_session_timeline(
             session_events
         )
@@ -216,6 +246,10 @@ def query_sessions(
                 "intent_signal": intent_signal,
                 "session_health": session_health,
                 "reliability_signal": reliability_signal,
+                "journey_pattern": journey_pattern,
+                "journey_depth": journey_depth,
+                "navigation_style": navigation_style,
+                "return_behavior": return_behavior,
                 "timeline": timeline,
             }
         )

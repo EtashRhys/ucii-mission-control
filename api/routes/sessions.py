@@ -32,6 +32,9 @@ from api.services.session_intelligence.outcome import (
     determine_outcome_depth,
     determine_outcome_reason,
 )
+from api.services.session_intelligence.conversion import (
+    analyze_conversion_signal,
+)
 
 
 router = APIRouter(
@@ -239,6 +242,27 @@ def query_sessions(
             outcome_signal
         )
 
+        conversion_signal = analyze_conversion_signal(
+            {
+                "journey_pattern": journey_pattern,
+                "journey_depth": journey_depth,
+                "navigation_style": navigation_style,
+                "return_behavior": return_behavior,
+            },
+            {
+                "outcome_signal": outcome_signal,
+                "outcome_depth": outcome_depth,
+                "outcome_reason": outcome_reason,
+            },
+            {
+                "pages": [
+                    event.url
+                    for event in session_events
+                    if event.url
+                ]
+            }
+        )
+
         timeline = build_session_timeline(
             session_events
         )
@@ -276,6 +300,7 @@ def query_sessions(
                 "outcome_signal": outcome_signal,
                 "outcome_depth": outcome_depth,
                 "outcome_reason": outcome_reason,
+                "conversion_signal": conversion_signal,
                 "timeline": timeline,
             }
         )

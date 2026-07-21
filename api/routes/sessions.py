@@ -20,6 +20,7 @@ from api.services.session_intelligence.significance import (
 from api.services.session_intelligence.intent import determine_intent_signal
 from api.services.session_intelligence.health import determine_session_health
 from api.services.session_intelligence.reliability import determine_reliability_signal
+from api.services.session_intelligence.timeline import build_session_timeline
 
 
 router = APIRouter(
@@ -72,16 +73,22 @@ def query_sessions(
 
     for session in sessions:
 
-        latest_event = (
+        session_events = (
             database.query(Event)
             .filter(
                 Event.session_id == session.session_id,
                 Event.visitor_id == session.visitor_id
             )
             .order_by(
-                Event.created_at.desc()
+                Event.created_at.asc()
             )
-            .first()
+            .all()
+        )
+
+        latest_event = (
+            session_events[-1]
+            if session_events
+            else None
         )
 
         duration_seconds = int(
@@ -179,6 +186,10 @@ def query_sessions(
             status
         )
 
+        timeline = build_session_timeline(
+            session_events
+        )
+
         results.append(
             {
                 "session_id": session.session_id,
@@ -205,6 +216,7 @@ def query_sessions(
                 "intent_signal": intent_signal,
                 "session_health": session_health,
                 "reliability_signal": reliability_signal,
+                "timeline": timeline,
             }
         )
 
@@ -258,11 +270,14 @@ def get_session(
             }
         )
 
+    timeline = build_session_timeline(events)
+
     return {
         "session_id": session_id,
         "visitor_id": events[0].visitor_id,
         "first_seen": events[0].created_at,
         "last_seen": events[-1].created_at,
         "event_count": len(events),
-        "events": event_results
+        "events": event_results,
+        "timeline": timeline
     }

@@ -30,14 +30,9 @@ templates = Jinja2Templates(
 )
 
 
-@app.get(
-    "/",
-    response_class=HTMLResponse,
-)
-def console_home(
+def render_console(
     request: Request,
 ):
-
     return templates.TemplateResponse(
         request=request,
         name="base.html",
@@ -45,6 +40,26 @@ def console_home(
             "status": "online",
         },
     )
+
+
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+)
+def console_home(
+    request: Request,
+):
+    return render_console(request)
+
+
+@app.get(
+    "/console",
+    response_class=HTMLResponse,
+)
+def console_route(
+    request: Request,
+):
+    return render_console(request)
 
 
 @app.get("/health")

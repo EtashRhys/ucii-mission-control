@@ -7,7 +7,6 @@
 UCII Mission Control
 </title>
 
-
 <link
 rel="stylesheet"
 href="{{ url_for('static', path='style.css') }}"
@@ -33,77 +32,6 @@ Private Operator Console
 
 
 
-
-<div class="panel">
-
-<h3>
-Live Operations
-</h3>
-
-
-<div class="metrics">
-
-
-<div class="metric">
-<h4>
-Active Sessions
-</h4>
-
-<strong>
-{{ summary.total }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-High Activity
-</h4>
-
-<strong>
-{{ summary.high_activity }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-Active Testing
-</h4>
-
-<strong>
-{{ summary.testing }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-Documentation
-</h4>
-
-<strong>
-{{ summary.documentation }}
-</strong>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
 <div class="panel">
 
 <h3>
@@ -117,6 +45,7 @@ Console:
 <strong>
 {{ status }}
 </strong>
+
 </p>
 
 
@@ -126,86 +55,11 @@ Mission Control API:
 <strong>
 {{ api_status }}
 </strong>
+
 </p>
 
 
 </div>
-
-
-
-
-
-<div class="panel">
-
-<h3>
-Priority Signals
-</h3>
-
-
-{% if priority %}
-
-
-{% for session in priority %}
-
-
-<div class="priority">
-
-
-<p>
-Visitor:
-
-<strong>
-{{ session.visitor_id }}
-</strong>
-</p>
-
-
-<p>
-Current:
-
-<strong>
-{{ session.current_url }}
-</strong>
-</p>
-
-
-<p>
-Intent:
-
-<strong>
-{{ session.intent_signal }}
-</strong>
-</p>
-
-
-<p>
-Signal:
-
-<strong>
-High activity session
-</strong>
-</p>
-
-
-</div>
-
-
-{% endfor %}
-
-
-{% else %}
-
-
-<p>
-No priority signals detected.
-</p>
-
-
-{% endif %}
-
-
-</div>
-
 
 
 
@@ -214,8 +68,19 @@ No priority signals detected.
 
 
 <h3>
-Session Intelligence
+Active Sessions
 </h3>
+
+
+<p>
+
+Active Visitors:
+
+<strong>
+{{ session_count }}
+</strong>
+
+</p>
 
 
 
@@ -226,16 +91,12 @@ Session Intelligence
 
 
 <h4>
-Session
+Visitor
 </h4>
 
 
 <p>
-Visitor:
-
-<strong>
 {{ session.visitor_id }}
-</strong>
 </p>
 
 
@@ -245,6 +106,7 @@ Current:
 <strong>
 {{ session.current_url }}
 </strong>
+
 </p>
 
 
@@ -254,6 +116,7 @@ Intent:
 <strong>
 {{ session.intent_signal }}
 </strong>
+
 </p>
 
 
@@ -263,6 +126,7 @@ Activity:
 <strong>
 {{ session.activity_level }}
 </strong>
+
 </p>
 
 
@@ -272,6 +136,7 @@ Pattern:
 <strong>
 {{ session.session_pattern }}
 </strong>
+
 </p>
 
 
@@ -281,6 +146,7 @@ Health:
 <strong>
 {{ session.session_health }}
 </strong>
+
 </p>
 
 
@@ -290,15 +156,17 @@ Reliability:
 <strong>
 {{ session.reliability_signal }}
 </strong>
+
 </p>
 
 
 <p>
-Last Event:
+Outcome:
 
 <strong>
-{{ session.last_event_type }}
+{{ session.outcome_signal.state if session.outcome_signal else "unknown" }}
 </strong>
+
 </p>
 
 

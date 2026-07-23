@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+        UCII Mission Control
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='style.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+<h1>
+    UCII Mission Control
+</h1>
+
+
+<h2>
+    Operator Console
+</h2>
+
+
+<div class="panel">
+
+<h3>
+System Status
+</h3>
+
+<p>
+Console:
+<strong>
+{{ status }}
+</strong>
+</p>
+
+
+<p>
+Mission Control API:
+<strong>
+{{ api_status }}
+</strong>
+</p>
+
+</div>
+
+
+
+<div class="panel">
+
+<h3>
+Active Sessions
+</h3>
+
+
+<p>
+Active Sessions:
+<strong>
+{{ session_count }}
+</strong>
+</p>
+
+
+{% for session in sessions %}
+
+<div class="session">
+
+
+<h4>
+Visitor
+</h4>
+
+<p>
+{{ session.visitor_id }}
+</p>
+
+
+<p>
+Current:
+<strong>
+{{ session.current_url }}
+</strong>
+</p>
+
+
+<p>
+Intent:
+<strong>
+{{ session.intent_signal }}
+</strong>
+</p>
+
+
+<p>
+Activity:
+<strong>
+{{ session.activity_level }}
+</strong>
+</p>
+
+
+<p>
+Significance:
+<strong>
+{{ session.session_significance }}
+</strong>
+</p>
+
+
+<p>
+Health:
+<strong>
+{{ session.session_health }}
+</strong>
+</p>
+
+
+<p>
+Reliability:
+<strong>
+{{ session.reliability_signal }}
+</strong>
+</p>
+
+
+</div>
+
+{% endfor %}
+
+
+</div>
+
+
+</div>
+
+</body>
+
+</html>

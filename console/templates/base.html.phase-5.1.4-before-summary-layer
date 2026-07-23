@@ -33,77 +33,6 @@ Private Operator Console
 
 
 
-
-<div class="panel">
-
-<h3>
-Live Operations
-</h3>
-
-
-<div class="metrics">
-
-
-<div class="metric">
-<h4>
-Active Sessions
-</h4>
-
-<strong>
-{{ summary.total }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-High Activity
-</h4>
-
-<strong>
-{{ summary.high_activity }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-Active Testing
-</h4>
-
-<strong>
-{{ summary.testing }}
-</strong>
-
-</div>
-
-
-
-<div class="metric">
-<h4>
-Documentation
-</h4>
-
-<strong>
-{{ summary.documentation }}
-</strong>
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
 <div class="panel">
 
 <h3>
@@ -117,6 +46,7 @@ Console:
 <strong>
 {{ status }}
 </strong>
+
 </p>
 
 
@@ -126,11 +56,10 @@ Mission Control API:
 <strong>
 {{ api_status }}
 </strong>
+
 </p>
 
-
 </div>
-
 
 
 
@@ -138,70 +67,62 @@ Mission Control API:
 <div class="panel">
 
 <h3>
-Priority Signals
+Operational Summary
 </h3>
 
 
-{% if priority %}
-
-
-{% for session in priority %}
-
-
-<div class="priority">
-
-
 <p>
-Visitor:
+Active Sessions:
 
 <strong>
-{{ session.visitor_id }}
+{{ summary.total }}
 </strong>
 </p>
 
 
 <p>
-Current:
+High Activity:
 
 <strong>
-{{ session.current_url }}
+{{ summary.high_activity }}
 </strong>
 </p>
 
 
 <p>
-Intent:
+Active Testing:
 
 <strong>
-{{ session.intent_signal }}
+{{ summary.testing }}
 </strong>
 </p>
 
 
 <p>
-Signal:
+Documentation Exploration:
 
 <strong>
-High activity session
+{{ summary.documentation }}
 </strong>
 </p>
 
 
-</div>
-
-
-{% endfor %}
-
-
-{% else %}
-
-
 <p>
-No priority signals detected.
+Healthy:
+
+<strong>
+{{ summary.healthy }}
+</strong>
 </p>
 
 
-{% endif %}
+<p>
+Needs Attention:
+
+<strong>
+{{ summary.attention }}
+</strong>
+</p>
 
 
 </div>
@@ -216,7 +137,6 @@ No priority signals detected.
 <h3>
 Session Intelligence
 </h3>
-
 
 
 {% for session in sessions %}
@@ -308,9 +228,7 @@ Last Event:
 {% endfor %}
 
 
-
 </div>
-
 
 
 </div>

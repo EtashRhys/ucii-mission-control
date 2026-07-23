@@ -1,0 +1,95 @@
+from pathlib import Path
+
+import httpx
+
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
+
+BASE_DIR = Path(__file__).resolve().parent
+
+
+MISSION_CONTROL_API = "http://127.0.0.1:8001"
+
+
+app = FastAPI(
+    title="UCII Mission Control Console",
+    description="Private operator console for UCII Mission Control",
+    version="0.2.0",
+)
+
+
+app.mount(
+    "/static",
+    StaticFiles(
+        directory=BASE_DIR / "static"
+    ),
+    name="static",
+)
+
+
+templates = Jinja2Templates(
+    directory=BASE_DIR / "templates"
+)
+
+
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+)
+def console_home(
+    request: Request,
+):
+
+    sessions = []
+    api_status = "offline"
+
+    try:
+        response = httpx.get(
+            f"{MISSION_CONTROL_API}/sessions",
+            timeout=5,
+        )
+
+        response.raise_for_status()
+
+        data = response.json()
+
+        sessions = data.get(
+            "sessions",
+            []
+        )
+
+        api_status = "online"
+
+    except Exception:
+        api_status = "offline"
+
+
+    active_sessions = [
+        session
+        for session in sessions
+        if session.get("status") == "active"
+    ]
+
+
+    return templates.TemplateResponse(
+        request=request,
+        name="base.html",
+        context={
+            "status": "online",
+            "api_status": api_status,
+            "session_count": len(active_sessions),
+            "sessions": active_sessions[:10],
+        },
+    )
+
+
+@app.get("/health")
+def health():
+
+    return {
+        "service": "UCII Mission Control Console",
+        "status": "healthy",
+    }

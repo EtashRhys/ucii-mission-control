@@ -17,7 +17,7 @@ MISSION_CONTROL_API = "http://127.0.0.1:8001"
 app = FastAPI(
     title="UCII Mission Control Console",
     description="Private operator console for UCII Mission Control",
-    version="0.5.0",
+    version="0.3.0",
 )
 
 
@@ -35,8 +35,7 @@ templates = Jinja2Templates(
 )
 
 
-
-def get_health():
+def get_api_health():
 
     try:
 
@@ -50,6 +49,7 @@ def get_health():
 
     except Exception:
         pass
+
 
     return "offline"
 
@@ -65,7 +65,10 @@ def get_sessions():
         )
 
         if response.status_code == 200:
-            return response.json().get(
+
+            data = response.json()
+
+            return data.get(
                 "sessions",
                 []
             )
@@ -73,63 +76,8 @@ def get_sessions():
     except Exception:
         pass
 
+
     return []
-
-
-
-def summarize_sessions(sessions):
-
-    summary = {
-
-        "total": len(sessions),
-
-        "high_activity": 0,
-
-        "testing": 0,
-
-        "documentation": 0,
-
-        "healthy": 0,
-
-        "attention": 0,
-
-    }
-
-
-    for session in sessions:
-
-
-        if session.get("activity_level") == "high":
-            summary["high_activity"] += 1
-
-
-        if session.get("intent_signal") == "active_testing":
-            summary["testing"] += 1
-
-
-        if "documentation" in str(
-            session.get("intent_signal")
-        ):
-            summary["documentation"] += 1
-
-
-        if session.get("session_health") == "healthy":
-            summary["healthy"] += 1
-        else:
-            summary["attention"] += 1
-
-
-    return summary
-
-
-
-def priority_sessions(sessions):
-
-    return [
-        session
-        for session in sessions
-        if session.get("activity_level") == "high"
-    ]
 
 
 
@@ -145,34 +93,22 @@ def console_home(
 
 
     return templates.TemplateResponse(
-
         request=request,
-
         name="base.html",
-
         context={
 
-            "status":
-                "online",
+            "status": "online",
 
             "api_status":
-                get_health(),
+                get_api_health(),
 
-            "summary":
-                summarize_sessions(
-                    sessions
-                ),
-
-            "priority":
-                priority_sessions(
-                    sessions
-                ),
+            "session_count":
+                len(sessions),
 
             "sessions":
                 sessions,
 
         },
-
     )
 
 

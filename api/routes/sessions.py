@@ -105,6 +105,20 @@ def query_sessions(
             else None
         )
 
+
+        visitor_environment = {}
+
+        if latest_event and latest_event.metadata_json:
+
+            try:
+                visitor_environment = json.loads(
+                    latest_event.metadata_json
+                )
+
+            except json.JSONDecodeError:
+
+                visitor_environment = {}
+
         duration_seconds = int(
             (
                 session.last_seen - session.first_seen
@@ -285,6 +299,7 @@ def query_sessions(
                 "pages_viewed": pages_viewed,
                 "unique_paths": unique_paths,
                 "last_event_type": last_event_type,
+                "visitor_environment": visitor_environment,
                 "activity_level": activity_level,
                 "session_pattern": session_pattern,
                 "session_significance": session_significance,

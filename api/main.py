@@ -5,6 +5,8 @@ from storage.database import Base
 from storage.database import engine
 
 from api.models import Event
+from api.models import Visitor
+
 from api.routes import events
 from api.routes import query
 from api.routes import sessions

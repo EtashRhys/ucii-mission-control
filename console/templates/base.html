@@ -276,6 +276,48 @@ Pattern:
 
 
 <p>
+Environment:
+
+<strong>
+{{ session.visitor_environment.platform or "unknown" }}
+</strong>
+</p>
+
+
+<p>
+Language:
+
+<strong>
+{{ session.visitor_environment.language or "unknown" }}
+</strong>
+</p>
+
+
+<p>
+Timezone:
+
+<strong>
+{{ session.visitor_environment.timezone or "unknown" }}
+</strong>
+</p>
+
+
+<p>
+Screen:
+
+<strong>
+{% if session.visitor_environment.screen %}
+{{ session.visitor_environment.screen.width }}
+x
+{{ session.visitor_environment.screen.height }}
+{% else %}
+unknown
+{% endif %}
+</strong>
+</p>
+
+
+<p>
 Health:
 
 <strong>
